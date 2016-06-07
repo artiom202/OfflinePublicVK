@@ -1,4 +1,5 @@
 import vk
+import os
 from peewee import *
 from urllib.request import urlopen
 
@@ -25,6 +26,8 @@ class Comments(Model):
 
 def download(pic, id):
     resource = urlopen(pic)
+    if not os.access('static\\img\\',os.F_OK):
+        os.makedirs('static\\img\\')
     out = open('static\\img\\' + str(id) + '_' + 'pic' + '.jpg', 'wb')
     out.write(resource.read())
     out.close()
