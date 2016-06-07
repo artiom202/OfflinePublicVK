@@ -1,6 +1,3 @@
 # OflinePublicVK
-# v 0.2
-Что нового:
-  Улучшеная работа с БД,
-  Поддержка коментариев.
-# Need create directory: static/img
+# v 0.3
+# Need create directory: static/img!!!
