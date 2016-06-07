@@ -37,7 +37,7 @@ def get_content(g_id):
     session = vk.Session()
     api = vk.API(session)
 
-    group_id = '-' + g_id
+    group_id = int('-' + str(g_id))
     group_posts = api.wall.get(owner_id=group_id, offset=1, count=50)
     for group_post in group_posts[1:len(group_posts)]:
         try:
@@ -64,3 +64,6 @@ def get_content(g_id):
         except:
             continue
 
+print('Enter group\'s id:')
+anid=input()
+get_content(anid)
