@@ -35,7 +35,7 @@ def fonts(filename):
 
 @get('/')
 def index():
-    return template('index.html')
+    return template('templates/index.html')
 
 
 @route('/<g_id>')
@@ -47,7 +47,7 @@ def pabl(g_id):
             continue
         else:
             ids.append(post.id)
-    return template('pabl.html', ids=ids, Comments=Comments)
+    return template('templates/pabl.html', ids=ids, Comments=Comments)
 
 
 run(host='localhost', port=9999, debug=True)
