@@ -35,7 +35,7 @@ def fonts(filename):
 
 @get('/')
 def index():
-    return template('index.html', g_id=g_id)
+    return template('index.html')
 
 
 @route('/<g_id>')
