@@ -64,6 +64,4 @@ def get_content(g_id):
         except:
             continue
 
-print('Enter group\'s id:')
-anid=input()
-get_content(anid)
+
