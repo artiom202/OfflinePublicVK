@@ -35,7 +35,6 @@ def fonts(filename):
 
 @get('/')
 def index():
-    g_id = request.forms.get("g_id")
     return template('index.html', g_id=g_id)
 
 
