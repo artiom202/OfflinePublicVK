@@ -1,2 +1,2 @@
 # OfflinePublicVK
-# v 0.3
+# v 0.4
