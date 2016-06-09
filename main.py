@@ -1,5 +1,6 @@
 import vk
 import os
+import platform
 from peewee import *
 from urllib.request import urlopen
 
@@ -25,12 +26,17 @@ class Comments(Model):
 
 
 def download(pic, id):
-    resource = urlopen(pic)
-    if not os.access('static\\img\\',os.F_OK):
-        os.makedirs('static\\img\\')
-    out = open('static\\img\\' + str(id) + '_' + 'pic' + '.jpg', 'wb')
-    out.write(resource.read())
-    out.close()
+	resource = urlopen(pic)
+	if platform.system() == 'Widnows':
+		os_dir = '\\'
+	else:
+	    os_dir = '/'
+	img_dir = 'static' + os_dir + 'img' + os_dir
+	if not os.access(img_dir,os.F_OK):
+		os.makedirs(img_dir)
+	out = open(img_dir + str(id) + '_' + 'pic' + '.jpg', 'wb')
+	out.write(resource.read())
+	out.close()
 
 
 def get_content(g_id):
