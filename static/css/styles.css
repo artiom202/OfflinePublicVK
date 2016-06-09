@@ -1,1 +1,29 @@
 
+body{
+    margin: 0px;
+    padding: 0px;
+}
+
+#wall {
+    width: 50%;
+    height: auto;
+    background: #cee8f5;
+    margin-left: 25%;
+}
+
+#top-block {
+    width: 80%;
+    background: #60a5c9;
+    margin-left: 10%;
+    height:100px;
+    border-radius: 0 0 15px 15px;
+    text-align: left;
+    color: #0027ff;
+    font: normal 70px/1 "Times New Roman", Times, serif;
+    vertical-align: middle;
+}
+
+#post {
+    width: 60%;
+    margin-left: 20%;
+}
