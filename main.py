@@ -61,7 +61,8 @@ def get_content(g_id):
                                 continue
 
                 post = Post.create(text=text, pic_id=id, id=id, group_id=g_id)
-        except:
+        except Except as error:
+            print(error)
             continue
 
 
