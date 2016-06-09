@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Пабл</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css" /> 
 
 </head>
 
@@ -14,15 +14,15 @@
    <div id="wall">
     <div id="post">
     % for idd in ids:
-    <img src='{{ idd }}_pic.jpg'>
-    <br>
+    <img alt="picture" src='{{ idd }}_pic.jpg' />
+    <br />
     <div id="comments" onclick="$('#comments').hide()">
     %for comment in Comments.select().where(Comments.post_id == idd):
         <h5>{{ comment.text }}</h5>
     %end
         </div>
     %end
-    <br>
+    <br />
        </div>
 </div>
 </body>
