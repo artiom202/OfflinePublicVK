@@ -1,6 +1,5 @@
 import vk
 import os
-import platform
 from peewee import *
 from urllib.request import urlopen
 
