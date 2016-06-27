@@ -1,16 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>OfflinePublicVK</title>
+    <style type="text/css">
+        head {
+            margin: 0px;
+            padding: 0px;
+        }
+        body {
+            margin: 0px;
+            padding: 0px;
+            font-family: Arial, sans-serif;
+        }
+        div {
+            border: 0px solid red;
+            margin: 0px;
+            padding: 0px;
+        }
+        div.top_bar {
+            padding:0px;
+            width: 800px;
+            height: 40;
+            margin: auto;
+            background-color:#57799d;
+            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        div.search {
+            position: relative;
+            text-align: center;
+            top: 8px;
+            padding:0px;
+            margin: 0px;
+        }
+        div.info{
+            width: 790px;
+            margin: auto;
+            text-align: center;
+            font-size: 14pt;
+        }
+    </style>
     <script type="text/javascript">
+        function redirect(f) {
+            d = parseInt(f.num.value);
+            if (isNaN(d)) {
+                alert ('Введите id паблика')
+            }
+            else {
+                window.location.href = d;
+            }
+        }
     </script>
-    <title>MAIN</title>
 </head>
 <body>
-    <h1 align="center" color="#fff">Для получения доступа к паблику напишите в адресной строке следующее:
-    <br>
-        localhost:9999/ID-Паблика
-    </h1>
+    <div class="top_bar">
+        <div class="search">
+            <form onSubmit="redirect(this); return false">
+                <input type="text" name="num">
+            </form>
+        </div>
+    </div>
+    <div class="info">
+        <br>
+        Для получения доступа к паблику напишите вверху id паблика и нажмите enter
+        <br><br>
+        или напишите в адресной строке следующее: localhost:9999/ID-Паблика
+    </div>
 </body>
 </html>
