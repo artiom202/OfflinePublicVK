@@ -33,6 +33,65 @@ def download(pic, id):
     out.close()
 
 
+def get_all_content(g_id):
+    session = vk.Session()
+    api = vk.API(session)
+
+    group_id = '-' + g_id
+    ofset = 1
+    while 1:
+        group_posts = api.wall.get(owner_id=group_id, offset=ofset, count=50)
+        if len(group_posts) < 11:
+            text = group_posts.get('text')
+            id = group_posts.get('id')
+            pic = group_posts.get('attachments')[0].get('photo').get('src_big')
+            if id in [post.id for post in Post.select()]:
+                continue
+            else:
+                download(pic, id)
+                post_comments = api.wall.getComments(owner_id=group_id, post_id=id, need_likes=True)
+                for i in range(len(post_comments)-1):
+                    comment = post_comments[1:len(post_comments)][i]
+                    if comment.get('likes').get('count') > 1:
+                        if 'https://vk.com' in comment.get('text'):
+                            continue
+                        else:
+                            if not '[id' in comment.get('text'):
+                                Comments.create(text=comment.get('text'), post_id=id)
+                            else:
+                                continue
+                Post.create(text=text, pic_id=id, id=id, group_id=g_id)
+            sleep(30)
+            break
+        else:
+            for group_post in group_posts[1:len(group_posts)]:
+                text = group_post.get('text')
+                id = group_post.get('id')
+                pic = group_post.get('attachments')[0].get('photo').get('src_big')
+                if id in [post.id for post in Post.select()]:
+                    continue
+                else:
+                    download(pic, id)
+                    post_comments = api.wall.getComments(owner_id=group_id, post_id=id, need_likes=True)
+                    for i in range(len(post_comments)-1):
+                        comment = post_comments[1:len(post_comments)][i]
+                        if comment.get('likes').get('count') > 1:
+                            if 'https://vk.com' in comment.get('text'):
+                                continue
+                            else:
+                                if not '[id' in comment.get('text'):
+                                    Comments.create(text=comment.get('text'), post_id=id)
+                                else:
+                                    continue
+
+                    Post.create(text=text, pic_id=id, id=id, group_id=g_id)
+
+                sleep(30)
+                continue
+            print('iterration++')
+        ofset += 10
+        
+
 def get_content(g_id):
     session = vk.Session()
     api = vk.API(session)
