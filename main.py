@@ -30,7 +30,7 @@ class Pic(Model):
         database = db
 
 
-def download(pic, id):
+def download(pic, id, pic_id):
     resource = urlopen(pic)
     if not os.access(os.path.join("static","img",""),os.F_OK):
         os.makedirs(os.path.join("static","img",""))
@@ -130,7 +130,7 @@ def get_content(g_id):
             print(error)
             continue
 
-# Проверте на ошибки, т.к. мог не всё скопировать
+
 def test_get(g_id):
     session = vk.Session()
     api = vk.API(session)
