@@ -34,7 +34,7 @@ def download(pic, id, pic_id):
     resource = urlopen(pic)
     if not os.access(os.path.join("static","img",""),os.F_OK):
         os.makedirs(os.path.join("static","img",""))
-    out = open(os.path.join("static","img","") + str(id) + '_' + 'pic' + '_' + str(pic_id) + '.jpg', 'wb')
+    out = open(os.path.join("static","img","") + str(id) + '_' + 'pic' + '.jpg', 'wb')
     out.write(resource.read())
     out.close()
     Pic.create(id=pic_id)
@@ -135,7 +135,7 @@ def test_get(g_id):
     session = vk.Session()
     api = vk.API(session)
     offset = 1
-    group_id = '-' + g_id
+    group_id = int('-' + str(g_id))
     group_posts = api.wall.get(owner_id=group_id, offset=offset, count=50)
 
     for group_post in group_posts[1:len(group_posts)]:

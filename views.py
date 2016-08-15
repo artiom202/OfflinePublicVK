@@ -6,7 +6,7 @@
 
 import time
 from bottle import run, route, template, post, request, get, static_file, redirect
-from main import Post, get_content, Comments
+from main import Post, test_get, Comments
 
 #/Imports
 
@@ -40,7 +40,7 @@ def index():
 
 @route('/<g_id>')
 def pabl(g_id):
-    get_content(g_id)
+    test_get(g_id)
     ids = []
     for post in Post.select().where(Post.group_id == g_id):
         if post.id in ids:
