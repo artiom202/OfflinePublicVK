@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Пабл</title>
-    <link rel="stylesheet" href="styles.css" /> 
+    <link rel="stylesheet" href="style.css" />
 
 </head>
 
@@ -14,7 +14,18 @@
    <div id="wall">
     <div id="post">
     % for idd in ids:
-    <img alt="picture" src='{{ idd }}_pic.jpg' />
+        % if len(Pic.select().where(Pic.post_id == idd)) > 1:
+        % for pic in Pic.select().where(Pic.post_id == idd):
+        <img alt="picture" src='{{ idd }}_pic_{{ pic.id }}.jpg' />
+        % end
+        <hr>
+        % end
+        % if len(Pic.select().where(Pic.post_id == idd)) == 1:
+        % pic = Pic.select().where(Pic.post_id == idd).get()
+        <img src='{{ idd }}_pic_{{ pic.id }}.jpg' />
+        <hr>
+        %end
+        <img src='{{ idd }}_pic.jpg' />
     <br />
     <div id="comments" onclick="$('#comments').hide()">
     %for comment in Comments.select().where(Comments.post_id == idd):
