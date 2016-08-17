@@ -34,10 +34,11 @@ def download(pic, id, pic_id):
     resource = urlopen(pic)
     if not os.access(os.path.join("static","img",""),os.F_OK):
         os.makedirs(os.path.join("static","img",""))
-    out = open(os.path.join("static","img","") + str(id) + '_' + 'pic' + '.jpg', 'wb')
+    out = open('static\\img\\' + str(id) + '_' + 'pic' + '_' + str(pic_id) + '.jpg', 'wb')
+    print(str(id) + '_' + 'pic' + '_' + str(pic_id))
+    Pic.create(id=pic_id, post_id=id)
     out.write(resource.read())
     out.close()
-    Pic.create(id=pic_id)
 
 
 def get_all_content(g_id):
