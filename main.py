@@ -187,5 +187,6 @@ def test_get(g_id):
 
             Post.create(text=text, id=id, group_id=g_id)
         except Exception as err:
+            print(group_post.get('attachments'))
             print(err)
             continue
