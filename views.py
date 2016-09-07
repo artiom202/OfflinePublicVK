@@ -6,7 +6,7 @@
 
 import time
 from bottle import run, route, template, post, request, get, static_file, redirect
-from main import Post, test_get, Comments
+from main import Post, Comments, get_all_content, test_get, Pic
 
 #/Imports
 
@@ -35,20 +35,24 @@ def fonts(filename):
 
 @get('/')
 def index():
-    return template('templates/index.html')
+    return template('index.html')
 
 
 @route('/<g_id>')
 def pabl(g_id):
-    test_get(g_id)
+    get_all_content(g_id)
     ids = []
+    count = 0
     for post in Post.select().where(Post.group_id == g_id):
         if post.id in ids:
             continue
         else:
+            count += 1
             ids.append(post.id)
-    return template('templates/pabl.html', ids=ids, Comments=Comments)
+    print(count)
+    return template('pabl.html', ids=ids, Comments=Comments, Pic=Pic)
 
 
 run(host='localhost', port=9999, debug=True)
+
 
