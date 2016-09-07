@@ -25,7 +25,7 @@
         <img src='{{ idd }}_pic_{{ pic.id }}.jpg' />
         <hr>
         %end
-        <img src='{{ idd }}_pic.jpg' />
+
     <br />
     <div id="comments" onclick="$('#comments').hide()">
     %for comment in Comments.select().where(Comments.post_id == idd):
