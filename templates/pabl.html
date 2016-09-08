@@ -14,6 +14,8 @@
    <div id="wall">
     <div id="post">
     % for idd in ids:
+        % post = Post.select().where(Post.id == idd).get()
+        <h4>{{ post.text }}</h4>
         % if len(Pic.select().where(Pic.post_id == idd)) > 1:
         % for pic in Pic.select().where(Pic.post_id == idd):
         <img alt="picture" src='{{ idd }}_pic_{{ pic.id }}.jpg' />
