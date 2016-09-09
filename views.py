@@ -50,7 +50,7 @@ def pabl(g_id):
             count += 1
             ids.append(post.id)
     print(count)
-    return template('templates/pabl.html', ids=ids, Comments=Comments, Pic=Pic)
+    return template('templates/pabl.html', ids=ids, Comments=Comments, Pic=Pic, Post=Post)
 
 
 run(host='localhost', port=9999, debug=True)
