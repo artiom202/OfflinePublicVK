@@ -18,13 +18,13 @@
         <h4>{{ post.text }}</h4>
         % if len(Pic.select().where(Pic.post_id == idd)) > 1:
         % for pic in Pic.select().where(Pic.post_id == idd):
-        <img alt="picture" src='{{ idd }}_pic_{{ pic.id }}.jpg' />
+        <img alt="picture" src='{{ pic.url }}' />
         % end
         <hr>
         % end
         % if len(Pic.select().where(Pic.post_id == idd)) == 1:
         % pic = Pic.select().where(Pic.post_id == idd).get()
-        <img src='{{ idd }}_pic_{{ pic.id }}.jpg' />
+        <img alt="picture" src='{{ pic.url }}' />
         <hr>
         %end
 

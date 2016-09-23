@@ -6,7 +6,7 @@
 
 import time
 from bottle import run, route, template, post, request, get, static_file, redirect
-from main import Post, Comments, get_all_content, test_get, Pic
+from main import Post, Comments, get_all_content, Pic
 
 #/Imports
 
