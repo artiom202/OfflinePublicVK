@@ -1,14 +1,12 @@
 # OfflinePublicVK
-# v 0.4
-#
- Python 3.5
- 
- OfflinePublicVK uses vk and peewee libraries and also bottle framework
- 
- To launch program start views.py via python's command shell, open your browser and type url: localhost:9999/[group_id]
- =================================================
- 
- Views.py creates local server with port 9999 and when we connecting to it, program gets an id of group which we want to be saved.
- After that program calls get_content() function with id parameter. 
- Function uses VK API to receive a group's wall and then saves it to content.db (images saving to \static\img\ folder).
- When the process finished all posts of the vk group are showed in the browser.
+###
+### Python 3.5
+### 
+####  OfflinePublicVK использует библиотеки *vk* и *peewee*, а также фреймворк **[Bottle](http://bottlepy.org/docs/dev/index.html)**
+***
+####  Запустите файл *views.py*, откройте браузер и введите адрес: *localhost:9999/[id-группы]*
+***
+##### *Views.py* с помощью фреймворка *Bottle* создает локальный сервер и принемает запросы через 9999 порт.
+##### После того, как программе сообщается id группы, она подключается к **[VK API](https://vk.com/dev/first_guide)** с помощью библиотеки *vk*.
+##### Далее программа получает информацию со стены группы и записывает её в базу данных *content.db* через библиотеку *peewee*.
+##### Затем фреймворк *Bottle* генерирует html страницу и отображает её в браузере.
