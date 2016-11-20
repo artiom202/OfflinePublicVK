@@ -19,26 +19,29 @@
     % for idd in ids:
         % post = Post.select().where(Post.id == idd).get()
         <h4>{{ post.text }}</h4>
-        % if len(Pic.select().where(Pic.post_id == idd)) > 1:
+        % if len(Pic.select().where(Pic.post_id == idd)) > 0:
         % for pic in Pic.select().where(Pic.post_id == idd):
         <img alt="picture" src='{{ pic.url }}' />
+        <br />
         % end
-        <hr>
+        <br />
         % end
-        % if len(Pic.select().where(Pic.post_id == idd)) == 1:
-        % pic = Pic.select().where(Pic.post_id == idd).get()
-        <img alt="picture" src='{{ pic.url }}' />
-        <hr>
-        %end
-
-    <br />
+        % if len(Doc.select().where(Doc.post_id == idd)) > 0:
+        % for doc in Doc.select().where(Doc.post_id == idd):
+        <p><a href='{{ doc.url }}' alt="link">doc: {{ doc.name }}</a></p>
+        % end
+        <br />
+        % end
+        
+    <br clear="left" />
     <div id="comments" onclick="$('#comments').hide()">
     %for comment in Comments.select().where(Comments.post_id == idd):
-        <h5>{{ comment.text }}</h5>
+        <p><h5>{{ comment.text }}</h5></p>
     %end
         </div>
     %end
     <br />
+    <hr/>
        </div>
 </div>
 </body>

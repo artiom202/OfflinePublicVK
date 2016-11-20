@@ -38,10 +38,16 @@ class Pic(Model):
     class Meta:
         database = db
 
-# Определяем сессию вк
-session = vk.Session()
-api = vk.API(session)
+class Doc(Model):
+    '''Класс документа прикрепленного к посту'''
 
+    id = IntegerField()
+    post_id = IntegerField()
+    url = TextField()
+    name = TextField()
+
+    class Meta:
+        database = db
 
 '''def download(pic, id, pic_id):
     Функция для загрузки фото по ссылке
@@ -65,6 +71,15 @@ def get_picture(attachment,post_pic_id):
     Pic.create(id=pic_id, post_id=post_pic_id, url=pic)    # Создаем запись о картинке в бд
 
 
+def get_document(attachment,post_doc_id):
+    '''Функция записывающая данные о документе в бд'''
+
+    doc = attachment.get('doc').get('url')
+    doc_id = attachment.get('doc').get('did')
+    doc_name = attachment.get('doc').get('title')
+    Doc.create(id=doc_id, post_id=post_doc_id, url=doc, name=doc_name)    # Создаем запись о документе в бд
+
+
 def get_post(group_post,group_id,post_id,post_comments):
     '''Функция записывающая данные о посте в бд'''
 
@@ -72,19 +87,25 @@ def get_post(group_post,group_id,post_id,post_comments):
     for attachment in group_post.get('attachments'):
         if attachment.get('type') == 'photo': 
             get_picture(attachment,post_id)
+        elif (attachment.get('type') == 'doc'):
+            get_document(attachment,post_id)
 
     for i in range(len(post_comments) - 1):
         comment = post_comments[1:len(post_comments)][i]
         if comment.get('likes').get('count') > 1:
             if not 'https://vk.com' in comment.get('text'):
                 if not '[id' in comment.get('text'):
-                    Comments.create(text=comment.get('text'), post_id=post_id)    # Создаем запись о комментарие в бд
+                    Comments.create(id=comment.get('cid'),text=comment.get('text'), post_id=post_id)    # Создаем запись о комментарие в бд
     Post.create(text=text, id=post_id, group_id=group_id)    # Создаём запись о посте в бд
 
 
 def get_all_content(g_id):
     '''Основная функция для загрузки картинок и комментов'''
-
+    
+    # Определяем сессию вк
+    session = vk.Session()
+    api = vk.API(session)
+    
     group_id = g_id
     group_id_negative = int('-' + str(g_id))
     offset = 1
@@ -131,7 +152,34 @@ def get_all_content(g_id):
                 print('Error all')
                 print(err)
 
-                
+
+def test_content(g_id):
+    '''Функция берущая первые 10 постов'''
+    
+    # Определяем сессию вк
+    session = vk.Session()
+    api = vk.API(session)
+    
+    group_id = g_id
+    group_id_negative = int('-' + str(g_id))
+    offset = 0
+    try:
+        group_posts = api.wall.get(owner_id=group_id_negative, offset=offset, count=10)
+    except Exception as err:
+        group_posts = []
+        print('Error no wall')
+        print(err)
+    if len(group_posts) > 0:
+        for group_post in group_posts[1:len(group_posts)]:
+            try:
+                post_id = group_post.get('id')
+                post_comments = api.wall.getComments(owner_id=group_id_negative, post_id=post_id, need_likes=True)
+                get_post(group_post,group_id,post_id,post_comments)
+            except Exception as err:
+                print(err)
+                print('Error get post')
+
+
 # Конструкция для дебага
 if __name__ == '__main__':
     get_all_content('101854455')
