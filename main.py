@@ -1,12 +1,15 @@
-import vk # для работы с  вк
-from peewee import * # для работы с бд
-from urllib.request import urlopen # для работы с веб страницами
+﻿#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import vk
+from peewee import *
+#from urllib.request import urlopen    # Для работы с веб страницами
 
-#Подклчаем базу данных и определяем модели таблиц
-db = SqliteDatabase('content.db')
+db = SqliteDatabase('content.db')    # Подключаем базу данных и определяем модели таблиц
 
 
 class Post(Model):
+    '''Класс поста на стене'''
+
     text = TextField()
     id = IntegerField()
     group_id = IntegerField()
@@ -16,6 +19,8 @@ class Post(Model):
 
 
 class Comments(Model):
+    '''Класс комментариев под постом'''
+
     text = TextField()
     post_id = IntegerField()
 
@@ -24,6 +29,8 @@ class Comments(Model):
 
 
 class Pic(Model):
+    '''Класс картинки прикрепленной к посту'''
+
     id = IntegerField()
     post_id = IntegerField()
     url = TextField()
@@ -31,9 +38,30 @@ class Pic(Model):
     class Meta:
         database = db
 
+class Doc(Model):
+    '''Класс документа прикрепленного к посту'''
 
-# Функция для загрузки фото по ссылке
-def download(pic, id, pic_id):
+    id = IntegerField()
+    post_id = IntegerField()
+    url = TextField()
+    name = TextField()
+
+    class Meta:
+        database = db
+
+class Link(Model):
+    '''Класс ссылки прикрепленной к посту'''
+
+    post_id = IntegerField()
+    url = TextField()
+    title = TextField()
+
+    class Meta:
+        database = db
+
+'''def download(pic, id, pic_id):
+    Функция для загрузки фото по ссылке
+    
     resource = urlopen(pic)
     # Windows
 	# out = open('static\\img\\' + str(id) + '_' + 'pic' + '_' + str(pic_id) + '.jpg', 'wb')
@@ -43,135 +71,132 @@ def download(pic, id, pic_id):
     Pic.create(id=pic_id, post_id=id)
     out.write(resource.read())
     out.close()
+'''
+    
+def get_picture(attachment,post_pic_id):
+    '''Функция записывающая данные о картинке в бд'''
+
+    pic = attachment.get('photo').get('src_big')
+    pic_id = attachment.get('photo').get('pid')
+    Pic.create(id=pic_id, post_id=post_pic_id, url=pic)    # Создаем запись о картинке в бд
 
 
-# Основная функция для загрузки картинок и коментов
+def get_document(attachment,post_doc_id):
+    '''Функция записывающая данные о документе в бд'''
+
+    doc = attachment.get('doc').get('url')
+    doc_id = attachment.get('doc').get('did')
+    doc_name = attachment.get('doc').get('title')
+    Doc.create(id=doc_id, post_id=post_doc_id, url=doc, name=doc_name)    # Создаем запись о документе в бд
+    
+def get_link(attachment,post_link_id):
+    '''Функция записывающая данные о прикрепленной ссылке в бд'''
+
+    link = attachment.get('link').get('url')
+    link_title = attachment.get('link').get('title')
+    Link.create(post_id=post_link_id, url=link, title=link_title)    # Создаем запись о ссылке в бд
+
+
+def get_post(group_post,group_id,post_id,post_comments):
+    '''Функция записывающая данные о посте в бд'''
+
+    text = group_post.get('text')
+    for attachment in group_post.get('attachments'):
+        if attachment.get('type') == 'photo': 
+            get_picture(attachment,post_id)
+        elif (attachment.get('type') == 'doc'):
+            get_document(attachment,post_id)
+        elif (attachment.get('type') == 'link'):
+            get_link(attachment,post_id)
+
+    for i in range(len(post_comments) - 1):
+        comment = post_comments[1:len(post_comments)][i]
+        if comment.get('likes').get('count') > 1:
+            if not 'https://vk.com' in comment.get('text'):
+                if not '[id' in comment.get('text'):
+                    Comments.create(id=comment.get('cid'),text=comment.get('text'), post_id=post_id)    # Создаем запись о комментарие в бд
+    Post.create(text=text, id=post_id, group_id=group_id)    # Создаём запись о посте в бд
+
+
 def get_all_content(g_id):
-    # определяем сессию вк
+    '''Основная функция для загрузки картинок и комментов'''
+    
+    # Определяем сессию вк
     session = vk.Session()
     api = vk.API(session)
-
-    group_id = '-' + g_id
+    
+    group_id = g_id
+    group_id_negative = int('-' + str(g_id))
     offset = 1
-    # главный цикл
-    while 1:
-        try:
-            
-            group_posts = api.wall.get(owner_id=group_id, offset=offset, count=10)
-            # для того чтобы загрузить все посты из групы мы проверяем меньше ли их чем 10
-            if len(group_posts) < 11:
-                # получаем посты из группы, и вытаскиваем из json ответа: 
-                for group_post in group_posts[1:len(group_posts)]:
-                    try:
-                        text = group_post.get('text')
-                        id = group_post.get('id')
-                        if id in [post.id for post in Post.select()]:
-                            continue
-                        for attachment in group_post.get('attachments'):
+    try:
+        group_posts = api.wall.get(owner_id=group_id_negative, offset=offset, count=10)    # Получаем посты из группы
+    except Exception as err:
+        group_posts = []
+        print('Error no wall')
+        print(err)    
+    if len(group_posts) > 0:
+        end=False    # Условие работы главного цикла
 
-                            if attachment.get('type') == 'photo':
-                                # картинки 
-                                pic = attachment.get('photo').get('src_big')
-                                pic_id = attachment.get('photo').get('pid')
-                                Pic.create(id=pic_id, post_id=id, url=pic)
-                            else:
-                                continue
-                        post_comments = api.wall.getComments(owner_id=group_id, post_id=id, need_likes=True)
-                        for i in range(len(post_comments) - 1):
-                            comment = post_comments[1:len(post_comments)][i]
-                            if comment.get('likes').get('count') > 1:
-                                if 'https://vk.com' in comment.get('text'):
-                                    continue
-                                else:
-                                    if not '[id' in comment.get('text'):
-                                        # коменты
-                                        Comments.create(text=comment.get('text'), post_id=id)
-                                    else:
-                                        continue
-                        # Создаём новый пост в бд
-                        Post.create(text=text, id=id, group_id=g_id)
-                    except Exception as err:
-                        print(err)
-                # если да, то прерываем главный цикл 
-                break
-            # если нет, то продолжаем выгружать контент
-            else:
-                print('else')
-                offset += 10
-                for group_post in group_posts[1:len(group_posts)]:
-                    try:
-                        text = group_post.get('text')
-                        id = group_post.get('id')
-                        if id in [post.id for post in Post.select()]:
-                            continue
-                        for attachment in group_post.get('attachments'):
-
-                            if attachment.get('type') == 'photo':
-                                pic = attachment.get('photo').get('src_big')
-                                pic_id = attachment.get('photo').get('pid')
-                                Pic.create(id=pic_id, post_id=id, url=pic)
-                            else:
-                                continue
-                        post_comments = api.wall.getComments(owner_id=group_id, post_id=id, need_likes=True)
-                        for i in range(len(post_comments) - 1):
-                            comment = post_comments[1:len(post_comments)][i]
-                            if comment.get('likes').get('count') > 1:
-                                if 'https://vk.com' in comment.get('text'):
-                                    continue
-                                else:
-                                    if not '[id' in comment.get('text'):
-                                        Comments.create(text=comment.get('text'), post_id=id)
-                                    else:
-                                        continue
-
-                        Post.create(text=text, id=id, group_id=g_id)
-                    except Exception as err:
-                        print(err)
-                continue
-        except Exception as err:
-            print('Error')
-            print(err)
-
-
-# !!! ТЕСТОВАЯ ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ КАРТИНОК БЕЗ ИХ ЗАГРУЗКИ !!!#
-def url_get(g_id):
-    session = vk.Session()
-    api = vk.API(session)
-    offset = 1
-    group_id = '-' + g_id
-    group_posts = api.wall.get(owner_id=group_id, offset=offset, count=5)
-
-    for group_post in group_posts[1:len(group_posts)]:
-        try:
-            text = group_post.get('text')
-            id = group_post.get('id')
-            if id in [post.id for post in Post.select()]:
-                continue
-            for attachment in group_post.get('attachments'):
-
-                if attachment.get('type') == 'photo':
-                    pic = attachment.get('photo').get('src_big')
-                    pic_id = attachment.get('photo').get('pid')
-                    print(pic)
-                    # download(pic, id, pic_id)
+        # Главный цикл
+        while end!=True:
+            try:
+                if len(group_posts)<10:    
+                    for group_post in group_posts[1:len(group_posts)]:
+                        try:
+                            post_id = group_post.get('id')
+                            post_comments = api.wall.getComments(owner_id=group_id_negative, post_id=post_id, need_likes=True)
+                            get_post(group_post,group_id,post_id,post_comments)
+                        except Exception as err:
+                            print(err)
+                            print('Error get post')
+                    end=True
                 else:
-                    continue
-            post_comments = api.wall.getComments(owner_id=group_id, post_id=id, need_likes=True)
-            for i in range(len(post_comments) - 1):
-                comment = post_comments[1:len(post_comments)][i]
-                if comment.get('likes').get('count') > 1:
-                    if 'https://vk.com' in comment.get('text'):
-                        continue
-                    else:
-                        if not '[id' in comment.get('text'):
-                            Comments.create(text=comment.get('text'), post_id=id)
-                        else:
-                            continue
+                    print('else')
+                    offset += 10
+                    for group_post in group_posts[1:len(group_posts)]:
+                        try:
+                            post_id = group_post.get('id')
+                            post_comments = api.wall.getComments(owner_id=group_id_negative, post_id=post_id, need_likes=True)
+                            get_post(group_post,group_id,post_id,post_comments)
+                        except Exception as err:
+                            print(err)
+                            print('Error get post')
+                    try:
+                        group_posts = api.wall.get(owner_id=group_id_negative, offset=offset, count=10)    #Получаем следующие посты из группы
+                    except Exception as err:
+                        print('Error get new wall')
+                        print(err)
+                        end=True
+            except Exception as err:
+                print('Error all')
+                print(err)
 
-            Post.create(text=text, id=id, group_id=g_id)
-        except Exception as err:
-            print(err)
-            continue
+
+def test_content(g_id):
+    '''Функция берущая первые 10 постов'''
+    
+    # Определяем сессию вк
+    session = vk.Session()
+    api = vk.API(session)
+    
+    group_id = g_id
+    group_id_negative = int('-' + str(g_id))
+    offset = 0
+    try:
+        group_posts = api.wall.get(owner_id=group_id_negative, offset=offset, count=10)
+    except Exception as err:
+        group_posts = []
+        print('Error no wall')
+        print(err)
+    if len(group_posts) > 0:
+        for group_post in group_posts[1:len(group_posts)]:
+            try:
+                post_id = group_post.get('id')
+                post_comments = api.wall.getComments(owner_id=group_id_negative, post_id=post_id, need_likes=True)
+                get_post(group_post,group_id,post_id,post_comments)
+            except Exception as err:
+                print(err)
+                print('Error get post')
 
 
 # Конструкция для дебага
