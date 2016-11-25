@@ -5,13 +5,31 @@
 #Imports
 
 import time
+from peewee import *
 from bottle import run, route, template, post, request, get, static_file, redirect
-from main import Post, Comments, get_all_content, test_content, Pic, Doc, Link
+from main import Post, Comments, get_all_content, test_content, Pic, Doc, Link, db
 
 #/Imports
 
 # Static Routes
 
+class Sqlite_Sequence(Model):
+    name = TextField()
+    seq = IntegerField()
+
+    class Meta:
+        database = db
+
+def clear_db():
+    '''Функция очищающая БД'''
+    
+    Link.delete().execute()
+    Doc.delete().execute()
+    Comments.delete().execute()
+    Pic.delete().execute()
+    Post.delete().execute()
+    Sqlite_Sequence.delete().execute()
+    
 
 @get('/<filename:re:.*\.js>')
 def javascripts(filename):
@@ -33,13 +51,17 @@ def fonts(filename):
     return static_file(filename, root='static/fonts')
 
 
-@get('/')
-def index():
-    return template('templates/index.html')
+@get('/<option:re:\D*$>')
+def index(option):
+    if option == 'clear':
+        clear_db()
+        return template('templates/index.html', option=option)
+    else:    
+        return template('templates/index.html', option=0)
 
-@route('/<g_id:re:\d+><test:re:\D*$>')
-def pabl(g_id,test):
-    if test == '&test':
+@route('/<g_id:re:\d+><option:re:\D*$>')
+def pabl(g_id,option):
+    if option == '&test':
         print('test_content')
         test_content(g_id)
     else:

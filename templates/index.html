@@ -1,20 +1,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>OfflinePublicVK</title>
-</head>
-<body>
-    <h1>OfflinePublicVK</h1>
-    <div class="main">
-        <p>Для получения доступа к паблику введите id паблика</p>
-         <form>
-            <input type="text" id="gid">
-            <input type="checkbox" id="test"> test
-            <input type="button" onClick="redirect()" value="Сохранить">
-         </form>
-        <p>или напишите в адресной строке следующее: localhost:9999/ID-Паблика</p>
-    </div>
-     <script>
+    <title>OfflinePublicVK</title>  
+    <script>
         function redirect() {
             var numb = document.getElementById("gid").value;
             if (numb == '') {
@@ -30,6 +18,22 @@
                 window.location.href = 'http://localhost:9999/' + numb + test;
             }
         } 
-    </script>
+    </script>  
+</head>
+<body>
+    <h1>OfflinePublicVK</h1>
+    <div class="main">
+        <p>Для получения доступа к паблику введите id паблика</p>
+         <form>
+            <input type="text" id="gid">
+            <input type="checkbox" id="test"> test
+            <input type="button" onClick="redirect()" value="Сохранить">
+         </form>
+        <p>или напишите в адресной строке следующее: localhost:9999/ID-Паблика</p>
+    % if option == 'clear':
+    <p><h4>База данных очищена</h4></p>
+    % end
+    <input type="button" value="Очистить БД" onClick="window.location.href = 'http://localhost:9999/clear'" />
+    </div>
 </body>
 </html>
