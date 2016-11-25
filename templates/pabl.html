@@ -13,10 +13,11 @@
 <input type="button" value="Назад" onClick="window.location.href = 'http://localhost:9999/'"/>
 </div>
    <div id="wall">
-    <div id="post">
-    % for idd in ids:
+    <div id="posts">
+        % for idd in ids:
         % post = Post.select().where(Post.id == idd).get()
         <h4>{{ post.text }}</h4>
+      <div id="pictures">  
         % if len(Pic.select().where(Pic.post_id == idd)) > 0:
         % for pic in Pic.select().where(Pic.post_id == idd):
         <img alt="picture" src='{{ pic.url }}' />
@@ -24,19 +25,39 @@
         % end
         <br />
         % end
+      </div>  
+      <div id="links">  
         % if len(Link.select().where(Link.post_id == idd)) > 0:
         % for link in Link.select().where(Link.post_id == idd):
-        <p><a href='{{ link.url }}' alt="link">link: {{ link.title }}</a></p>
+        <p><a href='{{ link.url }}' alt="link">[link: {{ link.title }}]</a></p>
         % end
         <br />
         % end
+      </div>
+      <div id="videos">   
+        % if len(Video.select().where(Video.post_id == idd)) > 0:
+        % for vid in Video.select().where(Video.post_id == idd):
+        <p>[video: {{ vid.platform }} : {{ vid.name }}]</p>
+        % end
+        <br />
+        % end
+      </div> 
+      <div id="audios">  
+        % if len(Audio.select().where(Audio.post_id == idd)) > 0:
+        % for audio in Audio.select().where(Audio.post_id == idd):
+        <p><a href='{{ audio.url }}' alt="audio">[audio: {{ audio.artist }} - {{ audio.title }}]</a></p>
+        % end
+        <br />
+        % end
+      </div>  
+      <div id="documents"> 
         % if len(Doc.select().where(Doc.post_id == idd)) > 0:
         % for doc in Doc.select().where(Doc.post_id == idd):
-        <p><a href='{{ doc.url }}' alt="doc">doc: {{ doc.name }}</a></p>
+        <p><a href='{{ doc.url }}' alt="doc">[doc: {{ doc.name }}]</a></p>
         % end
         <br />
         % end
-        
+      </div>  
     <br clear="left" />
     <div id="comments" onclick="$('#comments').hide()">
     %for comment in Comments.select().where(Comments.post_id == idd):

@@ -49,6 +49,29 @@ class Doc(Model):
     class Meta:
         database = db
 
+class Video(Model):
+    '''Класс видео прикрепленного к посту'''
+
+    id = IntegerField()
+    post_id = IntegerField()
+    platform = TextField()
+    name = TextField()
+
+    class Meta:
+        database = db
+
+class Audio(Model):
+    '''Класс музыкального трека прикрепленного к посту'''
+
+    id = IntegerField()
+    post_id = IntegerField()
+    artist = TextField()
+    title = TextField()
+    url = TextField()
+
+    class Meta:
+        database = db
+
 class Link(Model):
     '''Класс ссылки прикрепленной к посту'''
 
@@ -72,7 +95,7 @@ class Link(Model):
     out.write(resource.read())
     out.close()
 '''
-    
+
 def get_picture(attachment,post_pic_id):
     '''Функция записывающая данные о картинке в бд'''
 
@@ -88,7 +111,24 @@ def get_document(attachment,post_doc_id):
     doc_id = attachment.get('doc').get('did')
     doc_name = attachment.get('doc').get('title')
     Doc.create(id=doc_id, post_id=post_doc_id, url=doc, name=doc_name)    # Создаем запись о документе в бд
-    
+
+def get_video(attachment,post_vid_id):
+    '''Функция записывающая данные о видео в бд'''
+
+    video_platform = attachment.get('video').get('platform')
+    vid_id = attachment.get('video').get('vid')
+    vid_name = attachment.get('video').get('title')
+    Video.create(id=vid_id, post_id=post_vid_id, platform=video_platform, name=vid_name)    # Создаем запись о видео в бд
+
+def get_audio(attachment,post_audio_id):
+    '''Функция записывающая данные о музыкальном треке в бд'''
+
+    audio_url = attachment.get('audio').get('url')
+    audio_id = attachment.get('audio').get('aid')
+    audio_artist = attachment.get('audio').get('artist')
+    audio_title = attachment.get('audio').get('title')
+    Audio.create(id=audio_id, post_id=post_audio_id, artist=audio_artist, title=audio_title, url=audio_url)    # Создаем запись о музыкальном треке в бд
+
 def get_link(attachment,post_link_id):
     '''Функция записывающая данные о прикрепленной ссылке в бд'''
 
@@ -108,6 +148,10 @@ def get_post(group_post,group_id,post_id,post_comments):
             get_document(attachment,post_id)
         elif (attachment.get('type') == 'link'):
             get_link(attachment,post_id)
+        elif (attachment.get('type') == 'video'):
+            get_video(attachment,post_id)
+        elif (attachment.get('type') == 'audio'):
+            get_audio(attachment,post_id)
 
     for i in range(len(post_comments) - 1):
         comment = post_comments[1:len(post_comments)][i]
@@ -120,11 +164,11 @@ def get_post(group_post,group_id,post_id,post_comments):
 
 def get_all_content(g_id):
     '''Основная функция для загрузки картинок и комментов'''
-    
+
     # Определяем сессию вк
     session = vk.Session()
     api = vk.API(session)
-    
+
     group_id = g_id
     group_id_negative = int('-' + str(g_id))
     offset = 1
@@ -174,11 +218,11 @@ def get_all_content(g_id):
 
 def test_content(g_id):
     '''Функция берущая первые 10 постов'''
-    
+
     # Определяем сессию вк
     session = vk.Session()
     api = vk.API(session)
-    
+
     group_id = g_id
     group_id_negative = int('-' + str(g_id))
     offset = 0

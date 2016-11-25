@@ -7,7 +7,7 @@
 import time
 from peewee import *
 from bottle import run, route, template, post, request, get, static_file, redirect
-from main import Post, Comments, get_all_content, test_content, Pic, Doc, Link, db
+from main import Post, Comments, get_all_content, test_content, Pic, Doc, Link, db, Audio, Video
 
 #/Imports
 
@@ -27,6 +27,8 @@ def clear_db():
     Doc.delete().execute()
     Comments.delete().execute()
     Pic.delete().execute()
+    Video.delete().execute()
+    Audio.delete().execute()
     Post.delete().execute()
     Sqlite_Sequence.delete().execute()
     
@@ -75,7 +77,7 @@ def pabl(g_id,option):
             count += 1
             ids.append(post.id)
     print(count)
-    return template('templates/pabl.html', ids=ids, Comments=Comments, Pic=Pic, Post=Post, Doc=Doc, Link=Link)
+    return template('templates/pabl.html', ids=ids, Comments=Comments, Pic=Pic, Post=Post, Doc=Doc, Link=Link, Video=Video, Audio=Audio)
 
 
 run(host='localhost', port=9999, debug=True)
